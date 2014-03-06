@@ -1,9 +1,9 @@
-/*	RiskController.java
+/* RiskController.java
 *
 *  Description:	This class maps the user's actions in the the
 *				view to the data and methods in the model.
 *
-*  Author: Ted Mader, 2/25/2014
+*  Author: Ted Mader, 3/10/2014
 */
 
 import java.awt.event.ActionEvent;
@@ -13,27 +13,31 @@ public class RiskController implements ActionListener
 {
 	private RiskModel model;
 	private RiskView view;
+	
 	private PlayerCountDialog playerCountDialog;
-	private PlayerNamesDialog playerNamesDialog;
 	
-	public static RiskModel model;
-	
-	public RiskController( RiskModel newModel, RiskView riskView )
+	//Constructor
+	public RiskController( RiskModel model, RiskView view )
 	{
-		model = newModel;
-		view = riskView;
+		this.model = model;
+		this.view = view;
 		
 		//Add this class' actionListener to riskView's buttons
-		view.riskViewActionListener( this );
+		
+		view.riskViewActionListeners( this );
 	}
 	
-	public void actionPerformed( ActionEvent ae1 )
+	//RiskView's controller
+	public void actionPerformed( ActionEvent action )
 	{
-		String viewAction = ae1.getActionCommand();
+		String viewAction = action.getActionCommand();
 		
 		if( viewAction.equals( "newGameBtn" ) )
 		{
-			playerCountDialog = new playerCountDialog(view, true);
+			//Opens the playerCountDialog
+			playerCountDialog = new PlayerCountDialog( view, true );
+			playerCountDialog.playerCountActionListeners( new PlayerCountController( model, playerCountDialog ) );
+			playerCountDialog.setVisible( true );
 		}				
 		else if( viewAction.equals( "loadGameBtn" ) )
 		{
@@ -48,103 +52,142 @@ public class RiskController implements ActionListener
 			System.out.println( "Error" );
 		}
 	}
+}
 
-	class PlayerCountController implements ActionListener
+class PlayerCountController implements ActionListener
+{	
+	private RiskModel model;
+	private PlayerCountDialog view;
+	
+	private PlayerSettingsDialog playerSettingsDialog;
+	
+	//Constructor
+	public PlayerCountController( RiskModel model, PlayerCountDialog view )
 	{
-		PlayerCountDialog view;
-
-		public PlayerCountController( PlayerCountDialog view2 )
-		{
-			this.view = view2;
-			
-			view.playerCountActionListener( this );
-		}
-		
-		public void actionPerformed( ActionEvent ae2 )
-		{
-			String actionEvent2 = ae2.getActionCommand();
-			
-			if( actionEvent2.equals( "twoPlayersBtn" ) )
-			{
-				model.setPlayerCount( 2 );
-				System.out.println( "DONE!" );
-				playerNamesDialog = new PlayerNamesDialog(view, true, model.getPlayerCount() );
-			}
-			
-			else if( actionEvent2.equals( "threePlayersBtn" ) )
-			{
-				model.setPlayerCount( 3 );
-				System.out.println( "DONE!" );
-				playerNamesDialog = new PlayerNamesDialog(view, true, model.getPlayerCount() );
-			}
-			
-			else if( actionEvent2.equals( "fourPlayersBtn" ) )
-			{
-				model.setPlayerCount( 4 );
-				System.out.println( "DONE!" );	
-				playerNamesDialog = new PlayerNamesDialog(view, true, model.getPlayerCount() );
-			}
-			
-			else if( actionEvent2.equals( "fivePlayersBtn" ) )
-			{
-				model.setPlayerCount( 5 );
-				System.out.println( "DONE!" );
-				playerNamesDialog = new PlayerNamesDialog(view, true, model.getPlayerCount() );
-			}
-			
-			else if( actionEvent2.equals( "sixPlayersBtn" ) )
-			{
-				model.setPlayerCount( 6 );
-				System.out.println( "DONE!" );
-				playerNamesDialog = new PlayerNamesDialog(view, true, model.getPlayerCount() );
-			}
-			
-			else if( actionEvent2.equals( "backBtn" ) )
-			{
-				view.dispose();
-			}
-			
-			else
-			{
-				System.out.println( "Error" );
-			}
-		}
+		this.model = model;
+		this.view = view;
 	}
 	
-	class PlayerNamesController implements ActionListener
+	public void actionPerformed( ActionEvent ae2 )
 	{
-		PlayerNamesDialog view;
+		String actionEvent2 = ae2.getActionCommand();
 		
-		private String player1Name;
-		private String player2Name;
-		private String player3Name;
-		private String player4Name;
-		private String player5Name;
-		private String player6Name;
-		
-		public PlayerNamesController( PlayerNamesDialog view3 )
+		if( actionEvent2.equals( "threePlayersBtn" ) )
 		{
-			this.view = view3;
+			model.setPlayerCount( 3 );
 			
-			view.playerNamesActionListener( this );
+			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
+			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
+			playerSettingsDialog.setVisible( true );
 		}
 		
-		public void actionPerformed( ActionEvent ae3 )
+		else if( actionEvent2.equals( "fourPlayersBtn" ) )
 		{
-			String actionEvent3 = ae3.getActionCommand();
+			model.setPlayerCount( 4 );
 			
-			if( actionEvent3.equals( "startBtn" ) )
-			{
-				player1Name = view.getPlayer1TextField();
-				player2Name = view.getPlayer2TextField();
-				player3Name = view.getPlayer3TextField();
-				player4Name = view.getPlayer4TextField();
-				player5Name = view.getPlayer5TextField();
-				player6Name = view.getPlayer6TextField();
-				
-				model.setPlayerNames( player1Name, player2Name, player3Name, player4Name, player5Name, player6Name );
-			}
+			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
+			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
+			playerSettingsDialog.setVisible( true );
+		}
+		
+		else if( actionEvent2.equals( "fivePlayersBtn" ) )
+		{
+			model.setPlayerCount( 5 );
+			
+			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
+			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
+			playerSettingsDialog.setVisible( true );
+		}
+		
+		else if( actionEvent2.equals( "sixPlayersBtn" ) )
+		{
+			model.setPlayerCount( 6 );
+			
+			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
+			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
+			playerSettingsDialog.setVisible( true );
+		}
+		
+		else if( actionEvent2.equals( "backBtn" ) )
+		{
+			view.dispose();
+		}
+		
+		else
+		{
+			System.out.println( "Error" );
 		}
 	}
-}	
+}
+	
+class PlayerSettingsController implements ActionListener
+{
+	private RiskModel model;
+	private PlayerSettingsDialog view;
+
+	private String player1Name;
+	private String player2Name;
+	private String player3Name;
+	private String player4Name;
+	private String player5Name;
+	private String player6Name;
+	
+	private String player1Team;
+	private String player2Team;
+	private String player3Team;
+	private String player4Team;
+	private String player5Team;
+	private String player6Team;
+	
+	public PlayerSettingsController( RiskModel model, PlayerSettingsDialog view )
+	{
+		this.model = model;
+		this.view = view;
+	}
+	
+	public void actionPerformed( ActionEvent ae3 )
+	{
+		String actionEvent3 = ae3.getActionCommand();
+		
+		if( actionEvent3.equals( "startBtn" ) )
+		{
+			player1Name = view.getPlayer1TextField();
+			player2Name = view.getPlayer2TextField();
+			player3Name = view.getPlayer3TextField();
+		
+			player1Team = view.getPlayer1ComboBox();
+			player2Team = view.getPlayer2ComboBox();
+			player3Team = view.getPlayer3ComboBox();
+			
+			//Gets player names based on playerCount
+			if( model.getPlayerCount() > 3 )
+			{
+				player4Name = view.getPlayer4TextField();
+				player4Team = view.getPlayer4ComboBox();
+			}
+			if( model.getPlayerCount() > 4 )
+			{
+				player5Name = view.getPlayer5TextField();
+				player5Team = view.getPlayer5ComboBox();
+			}
+			if( model.getPlayerCount() > 5 )
+			{
+				player6Name = view.getPlayer6TextField();
+				player6Team = view.getPlayer6ComboBox();
+			}
+			
+			//Sets player names
+			model.setPlayerNames( player1Name, player2Name, player3Name, player4Name, player5Name, player6Name );
+			
+			//Sets player teams
+			model.setPlayerTeams( player1Team, player2Team, player3Team, player4Team, player5Team, player6Team );
+
+		}
+		
+		if( actionEvent3.equals( "backBtn" ) )
+		{
+			view.dispose();
+		}
+	}
+}
 

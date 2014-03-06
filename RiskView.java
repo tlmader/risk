@@ -1,9 +1,9 @@
-/*	RiskView.java
+/* RiskView.java
 *
 *  Description: This class sets up the main GUI screen of the
 *				Risk program.
 *
-*  Author: Ted Mader, 2/25/2014
+*  Author: Ted Mader, 3/10/2014
 */
 
 import javax.swing.JFrame;
@@ -28,12 +28,12 @@ public class RiskView extends JFrame
 	protected RiskView()
 	{
 		setTitle( "Java-Risk" );
-		setPreferredSize( new Dimension( 400, 200 ) );
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setPreferredSize( new Dimension( 300, 300 ) );
+		setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
 		setLocationRelativeTo( null );
 		setResizable( false );
 		
-		add(mainMenu);
+		add( mainMenu() );
 		
 		pack();
 		setVisible( true );
@@ -42,16 +42,24 @@ public class RiskView extends JFrame
 	
 	private JPanel mainMenu()
 	{
+		//Creates the panel
 		JPanel mainPanel = new JPanel();
 		
+		//Sets Layout
+		GridLayout mainLayout = new GridLayout( 3, 1, 5, 5 );
+		mainPanel.setLayout( mainLayout );
+		
+		//Creates buttons
 		newGameBtn = new JButton( "New Game" );
 		loadGameBtn = new JButton( "Load Game" );
 		quitBtn = new JButton( "Quit" );
 		
+		//Sets button commands
 		newGameBtn.setActionCommand( newGameBtnName );
 		loadGameBtn.setActionCommand( loadGameBtnName );
-		quitBtn.setActionCommand( cancelBtnName );
+		quitBtn.setActionCommand( quitBtnName );
 		
+		//Adds buttons to mainPanel
 		mainPanel.add( newGameBtn );
 		mainPanel.add( loadGameBtn );
 		mainPanel.add( quitBtn );
@@ -59,10 +67,11 @@ public class RiskView extends JFrame
 		return mainPanel;
 	}
 	
-	protected void riskViewActionListener( ActionListener event )
+	//Action listeners for riskView
+	protected void riskViewActionListeners( ActionListener event )
 	{
 		newGameBtn.addActionListener( event );
 		loadGameBtn.addActionListener( event );
-		cancelBtn.addActionListener( event );
+		quitBtn.addActionListener( event );
 	}
 }
