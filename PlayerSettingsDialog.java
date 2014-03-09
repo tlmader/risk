@@ -8,10 +8,10 @@
 
 import javax.swing.JFrame;
 import javax.swing.JDialog;
+import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JTextField;
-import javax.swing.JPanel;
 import javax.swing.JComboBox;
 import java.awt.GridLayout;
 import java.awt.Dimension;
@@ -23,11 +23,15 @@ public class PlayerSettingsDialog extends JDialog
 	private JPanel playerNamesPanel;
 	private JPanel playerTeamsPanel;
 	
-	private JButton startBtn;
-	private JButton backBtn;
+	private GridLayout mainLayout;
+	private GridLayout playerNamesLayout;
+	private GridLayout playerTeamsLayout;
 	
-	private String startBtnName = "startBtn";
-	private String backBtnName = "backBtn";
+	private JButton startButton;
+	private JButton backButton;
+	
+	private String startButtonName = "startButton";
+	private String backButtonName = "backButton";
 	
 	private JTextField player1TextField;
 	private JTextField player2TextField;
@@ -54,13 +58,27 @@ public class PlayerSettingsDialog extends JDialog
 		
 		this.playerCount = playerCount;
 		
-		//playerNamesPanel
+		setDefaultCloseOperation( JFrame.HIDE_ON_CLOSE );
+		setResizable( false );
 		
+		mainLayout = new GridLayout( 1, 2, 5, 5 );
+		setLayout( mainLayout );
+				
+		add( playerNamesPanel() );
+		add( playerTeamsPanel() );
+		
+		setLocationRelativeTo( null );
+		
+		pack();
+	}
+	
+	private JPanel playerNamesPanel()
+	{
 		playerNamesPanel = new JPanel();
 		
 		playerNamesPanel.setPreferredSize( new Dimension( 200, playerCount * 40 + 40) );
 		
-		GridLayout playerNamesLayout = new GridLayout( playerCount + 1, 1, 5, 5 );
+		playerNamesLayout = new GridLayout( playerCount + 1, 1, 5, 5 );
 		playerNamesPanel.setLayout( playerNamesLayout );
 		
 		player1TextField = new JTextField();
@@ -87,19 +105,23 @@ public class PlayerSettingsDialog extends JDialog
 			playerNamesPanel.add( player6TextField );
 		}
 		
-		backBtn = new JButton ( "Back" );
+		backButton = new JButton ( "Back" );
 		
-		backBtn.setActionCommand( backBtnName );
+		backButton.setActionCommand( backButtonName );
 		
-		playerNamesPanel.add( backBtn );
+		playerNamesPanel.add( backButton );
 		
-		//playerTeamsPanel
+		return playerNamesPanel;
+	}
+
+	private JPanel playerTeamsPanel()
+	{
 
 		playerTeamsPanel = new JPanel();
 		
 		playerTeamsPanel.setPreferredSize( new Dimension( 200, playerCount * 40 + 40) );
 		
-		GridLayout playerTeamsLayout = new GridLayout( playerCount + 1, 1, 5, 5 );
+		playerTeamsLayout = new GridLayout( playerCount + 1, 1, 5, 5 );
 		playerTeamsPanel.setLayout( playerTeamsLayout );
 		
 		player1ComboBox = new JComboBox( teams );
@@ -126,32 +148,19 @@ public class PlayerSettingsDialog extends JDialog
 			playerTeamsPanel.add( player6ComboBox );
 		}
 		
-		startBtn = new JButton ( "Start Game" );
+		startButton = new JButton ( "Start Game" );
 		
-		startBtn.setActionCommand( startBtnName );
+		startButton.setActionCommand( startButtonName );
 		
-		playerTeamsPanel.add( startBtn );
-		
-		//Main Panel
-		
-		setDefaultCloseOperation( JFrame.HIDE_ON_CLOSE );
-		setResizable( false );
-		
-		GridLayout mainLayout = new GridLayout( 1, 2, 5, 5 );
-		setLayout( mainLayout );
-				
-		add( playerNamesPanel );
-		add( playerTeamsPanel );
-		
-		setLocationRelativeTo( owner );
-		
-		pack();
+		playerTeamsPanel.add( startButton );
+
+		return playerTeamsPanel;
 	}
 	
 	protected void playerSettingsActionListeners( ActionListener event )
 	{
-		startBtn.addActionListener( event );
-		backBtn.addActionListener( event );
+		startButton.addActionListener( event );
+		backButton.addActionListener( event );
 	}
 	
 	//Get methods for text fields

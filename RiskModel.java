@@ -10,10 +10,13 @@
 
 import java.util.Observable;
 import javax.swing.JFrame;
+import javax.swing.JFileChooser;
 
 public class RiskModel extends Observable
 {
 	private int playerCount;
+	private int currentPlayer;
+	private int troopCount;
 	
 	private String player1Name;
 	private String player2Name;
@@ -29,6 +32,14 @@ public class RiskModel extends Observable
 	private String player5Team;
 	private String player6Team;	
 	
+	private String currentPlayerName;
+	
+	private String reinforceString;
+	private String attackString;
+	private String fortifyString;
+	
+	private JFileChooser fileChooser;
+	
 	//RiskView.java methods
 	
 	//Constructor
@@ -37,10 +48,9 @@ public class RiskModel extends Observable
 	
 	}
 	
-	//If load button is pressed
-	protected void loadGame()
+	protected void quitGame()
 	{
-	
+		System.exit( 0 );
 	}
 	
 	//PlayerCountDialog.java methods
@@ -49,8 +59,6 @@ public class RiskModel extends Observable
 	protected void setPlayerCount( int playerCount )
 	{
 		this.playerCount = playerCount;
-		
-		System.out.println( "playerCount = " + playerCount );
 	}
 	
 	//Gets the number of players
@@ -68,13 +76,6 @@ public class RiskModel extends Observable
 		this.player4Name = player4Name;
 		this.player5Name = player5Name;
 		this.player6Name = player6Name;
-		
-		System.out.println( "player1Name = " + player1Name );
-		System.out.println( "player2Name = " + player2Name );
-		System.out.println( "player3Name = " + player3Name );
-		System.out.println( "player4Name = " + player4Name );
-		System.out.println( "player5Name = " + player5Name );
-		System.out.println( "player6Name = " + player6Name );
 	}
 	
 	public void setPlayerTeams( String player1Team, String player2Team, String player3Team, String player4Team, String player5Team, String player6Team )
@@ -85,13 +86,12 @@ public class RiskModel extends Observable
 		this.player4Team = player4Team;
 		this.player5Team = player5Team;
 		this.player6Team = player6Team;
-		
-		System.out.println( "player1Team = " + player1Team );
-		System.out.println( "player2Team = " + player2Team );
-		System.out.println( "player3Team = " + player3Team );
-		System.out.println( "player4Team = " + player4Team );
-		System.out.println( "player5Team = " + player5Team );
-		System.out.println( "player6Team = " + player6Team );
+	}
+	
+	public void initializeGame()
+	{
+		currentPlayer = 1;
+		currentPlayerName = player1Name;
 	}
 	
 	//Get methods for player names
@@ -124,5 +124,77 @@ public class RiskModel extends Observable
 	protected String getPlayer6Name()
 	{
 		return player6Name;
+	}
+	
+	protected void setCurrentPlayer()
+	{
+		currentPlayer++;
+		
+		if( currentPlayer == 1 )
+		{
+			currentPlayerName = player1Name;
+		}
+		
+		if( currentPlayer == 2 )
+		{
+			currentPlayerName = player2Name;
+		}
+		
+		if( currentPlayer == 3 )
+		{
+			currentPlayerName = player3Name;
+		}
+		
+		if( currentPlayer == 4 )
+		{
+			currentPlayerName = player4Name;
+		}
+		
+		if( currentPlayer == 5 )
+		{
+			currentPlayerName = player5Name;
+		}
+		
+		if( currentPlayer == 6 )
+		{
+			currentPlayerName = player6Name;
+		}
+	}
+	
+	protected int getCurrentPlayer()
+	{
+		return currentPlayer;
+	}
+	
+	//Message Strings for dialog boxes
+	
+	protected void buildReinforceString( int troopCount, String selectedTerritory )
+	{
+		reinforceString = currentPlayerName + " has chosen to reinforce " + selectedTerritory + " with " + troopCount + " troops.";
+	}
+	
+	protected void buildAttackString( int troopCount, String selectedTerritory, String targetTerritory )
+	{
+		attackString = currentPlayerName + " has chosen to attack from " + selectedTerritory + " to " + targetTerritory + " with " + troopCount + " troops.";
+	}
+	
+	protected void buildFortifyString( int troopCount, String selectedTerritory, String targetTerritory )
+	{
+		fortifyString = currentPlayerName + " has chosen to fortify " + targetTerritory + " with " + troopCount + " troops from " + selectedTerritory + ".";
+	}
+	
+	protected String getReinforceString()
+	{
+		return reinforceString;
+	}
+	
+	protected String getAttackString()
+	{
+		return attackString;
+	}
+	
+	protected String getFortifyString()
+	{
+		return fortifyString;
 	}
 }
