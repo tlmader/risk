@@ -271,6 +271,7 @@ class RiskBoardController implements ActionListener
 				
 				isInt = "yes";
 			}
+			
 			catch( Exception error )
 			{
 				JOptionPane.showMessageDialog( null, "Please type a number." );

@@ -18,21 +18,23 @@ import java.lang.StringBuilder;
 
 public class PlayerCountDialog extends JDialog
 {
-	private JPanel mainPanel;
+	private JPanel playerCountPanel;
+	
+	private GridLayout playerCountLayout;
 	
 	private JLabel playerCountLabel;
 
-	private JButton threePlayersBtn;
-	private JButton fourPlayersBtn;
-	private JButton fivePlayersBtn;
-	private JButton sixPlayersBtn;
-	private JButton backBtn;
+	private JButton threePlayersButton;
+	private JButton fourPlayersButton;
+	private JButton fivePlayersButton;
+	private JButton sixPlayersButton;
+	private JButton backButton;
 	
-	private String threePlayersBtnName = "threePlayersBtn";
-	private String fourPlayersBtnName = "fourPlayersBtn";
-	private String fivePlayersBtnName = "fivePlayersBtn";
-	private String sixPlayersBtnName = "sixPlayersBtn";
-	private String backBtnName = "backBtn";
+	private String threePlayersButtonName = "threePlayersButton";
+	private String fourPlayersButtonName = "fourPlayersButton";
+	private String fivePlayersButtonName = "fivePlayersButton";
+	private String sixPlayersButtonName = "sixPlayersButton";
+	private String backButtonName = "backButton";
 	
 	protected PlayerCountDialog( RiskView owner, boolean modality )
 	{
@@ -43,45 +45,50 @@ public class PlayerCountDialog extends JDialog
 		setDefaultCloseOperation( JFrame.HIDE_ON_CLOSE );
 		setResizable( false );
 		
-		mainPanel = new JPanel();
+		add( playerCountPanel() );
 		
-		GridLayout playerCountLayout = new GridLayout( 6, 2, 5, 5 );
-		mainPanel.setLayout( playerCountLayout );
+		setLocationRelativeTo( null );
+		
+		pack();
+	}
+	
+	private JPanel playerCountPanel()
+	{
+		playerCountPanel = new JPanel();
+		
+		playerCountLayout = new GridLayout( 6, 1, 5, 5 );
+		playerCountPanel.setLayout( playerCountLayout );
 		
 		playerCountLabel = new JLabel( "Number of Leaders:" );
 		
-		threePlayersBtn = new JButton( "Three" );
-		fourPlayersBtn = new JButton( "Four" );
-		fivePlayersBtn = new JButton( "Five" );
-		sixPlayersBtn = new JButton( "Six" );
-		backBtn = new JButton ( "Back" );
+		threePlayersButton = new JButton( "Three" );
+		fourPlayersButton = new JButton( "Four" );
+		fivePlayersButton = new JButton( "Five" );
+		sixPlayersButton = new JButton( "Six" );
+		backButton = new JButton ( "Back" );
 		
-		threePlayersBtn.setActionCommand( threePlayersBtnName );
-		fourPlayersBtn.setActionCommand( fourPlayersBtnName );
-		fivePlayersBtn.setActionCommand( fivePlayersBtnName );
-		sixPlayersBtn.setActionCommand( sixPlayersBtnName );
-		backBtn.setActionCommand( backBtnName );
+		threePlayersButton.setActionCommand( threePlayersButtonName );
+		fourPlayersButton.setActionCommand( fourPlayersButtonName );
+		fivePlayersButton.setActionCommand( fivePlayersButtonName );
+		sixPlayersButton.setActionCommand( sixPlayersButtonName );
+		backButton.setActionCommand( backButtonName );
 		
-		mainPanel.add( playerCountLabel );
-		mainPanel.add( threePlayersBtn );
-		mainPanel.add( fourPlayersBtn );
-		mainPanel.add( fivePlayersBtn );
-		mainPanel.add( sixPlayersBtn );
-		mainPanel.add( backBtn );
+		playerCountPanel.add( playerCountLabel );
+		playerCountPanel.add( threePlayersButton );
+		playerCountPanel.add( fourPlayersButton );
+		playerCountPanel.add( fivePlayersButton );
+		playerCountPanel.add( sixPlayersButton );
+		playerCountPanel.add( backButton );
 		
-		add( mainPanel );
-		
-		setLocationRelativeTo( owner );
-		
-		pack();
+		return playerCountPanel;
 	}	
 
 	protected void playerCountActionListeners( ActionListener event )
 	{
-		threePlayersBtn.addActionListener( event );
-		fourPlayersBtn.addActionListener( event );
-		fivePlayersBtn.addActionListener( event );
-		sixPlayersBtn.addActionListener( event );
-		backBtn.addActionListener( event );
+		threePlayersButton.addActionListener( event );
+		fourPlayersButton.addActionListener( event );
+		fivePlayersButton.addActionListener( event );
+		sixPlayersButton.addActionListener( event );
+		backButton.addActionListener( event );
 	}
 }
