@@ -1,411 +1,397 @@
-/* RiskController.java
-*
-*  Description:	This class maps the user's actions in the the
-*				view to the data and methods in the model.
-*
-*  Author: Ted Mader, 3/10/2014
-*/
+import java.util.ArrayList;
+
+import java.lang.Integer;
 
 import java.io.File;
-import java.lang.Integer;
+import java.io.FileInputStream;
+import java.io.DataInputStream;
+import java.io.ObjectInputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
-public class RiskController implements ActionListener
-{
+/**
+ * This class maps the user's actions in the RiskView to the data and methods in the model.
+ * @author Ted Mader
+ * @version Alpha
+ * @date 5/02/14
+ **/
+public class RiskController implements ActionListener {
+
 	private RiskModel model;
+	private RiskModel loadedModel;
 	private RiskView view;
+	
 	private JFileChooser fileChooser;
-	private File file;
+	private ObjectInputStream objectReader;
 	
 	private PlayerCountDialog playerCountDialog;
-	
+	private BoardView boardView;	
 	//Constructor
-	public RiskController( RiskModel model, RiskView view )
-	{
+	public RiskController(RiskModel model, RiskView view) {
+	
+		System.out.println("Loaded Risk!");
+		
 		this.model = model;
 		this.view = view;
-		
 		//Add this class' actionListener to riskView's buttons
-		
-		view.riskViewActionListeners( this );
+		view.riskViewActionListeners(this);
 	}
 	
 	//RiskView's controller
-	public void actionPerformed( ActionEvent e )
-	{
-		String actionEvent = e.getActionCommand();
+	public void actionPerformed(ActionEvent evt) {
+	
+		String actionEvent = evt.getActionCommand();
 		
-		if( actionEvent.equals( "newGameButton" ) )
-		{
+		if (actionEvent.equals("newGameBtn")) {
+		
+			System.out.println("Loading PlayerCountDialog...");
 			//Opens the playerCountDialog
-			playerCountDialog = new PlayerCountDialog( view, true );
-			playerCountDialog.playerCountActionListeners( new PlayerCountController( model, playerCountDialog ) );
-			playerCountDialog.setVisible( true );
-		}				
-		else if( actionEvent.equals( "loadGameButton" ) )
-		{
-			fileChooser = new JFileChooser();
+			playerCountDialog = new PlayerCountDialog(view, true);
+			playerCountDialog.addActionListeners(new PlayerCountController(model, playerCountDialog));
+			playerCountDialog.setVisible(true);
 			
-			if ( fileChooser.showOpenDialog( view ) == JFileChooser.APPROVE_OPTION )
-			{
-				file = fileChooser.getSelectedFile();
+		} else if (actionEvent.equals("loadGameBtn")) {
+			fileChooser = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Java-Risk Save Files", "jrs");
+			fileChooser.setFileFilter(filter);
+			
+			if (fileChooser.showOpenDialog(view) == JFileChooser.APPROVE_OPTION) {
+			
+				try {
+				objectReader = new ObjectInputStream(new FileInputStream(fileChooser.getSelectedFile()));
+				loadedModel = (RiskModel)objectReader.readObject();
+				objectReader.close();
+				boardView = new BoardView(view, true, loadedModel);
+				boardView.addActionListeners(new BoardViewController(loadedModel, boardView), new RiskListController(loadedModel, boardView));
+				
+				} catch (IOException e) {
+				System.out.println(e.getMessage());
+				
+				} catch (ClassNotFoundException e)	{
+					System.out.println(e.getMessage());
+				}
 			}
-		}				
-		else if( actionEvent.equals( "quitButton" ) )
-		{
-			model.quitGame();
-		}
-		else
-		{
-			System.out.println( "Error" );
+		} else if (actionEvent.equals("quitBtn")) {
+				model.quitGame();
+				
+		} else {
+				System.out.println("Error: " + actionEvent + " actionEvent not found!");
 		}
 	}
 }
 
-class PlayerCountController implements ActionListener
-{	
+/**
+ * This class maps the user's actions in the PlayerCountDialog to the data and methods in 
+ * the model.
+ * @author Ted Mader
+ * @version Alpha
+ * @date 5/02/14
+ **/
+class PlayerCountController implements ActionListener {
+
 	private RiskModel model;
 	private PlayerCountDialog view;
 	
 	private PlayerSettingsDialog playerSettingsDialog;
-	
 	//Constructor
-	public PlayerCountController( RiskModel model, PlayerCountDialog view )
+	public PlayerCountController(RiskModel model, PlayerCountDialog view)
 	{
+		System.out.println("Loaded PlayerCountController!");
+		
 		this.model = model;
 		this.view = view;
 	}
 	
-	public void actionPerformed( ActionEvent e )
-	{
-		String actionEvent = e.getActionCommand();
+	public void actionPerformed(ActionEvent evt) {
+	
+		String actionEvent = evt.getActionCommand();
 		
-		if( actionEvent.equals( "threePlayersButton" ) )
-		{
-			model.setPlayerCount( 3 );
+		if (actionEvent.equals("threePlayersBtn")) {
+		
+			model.setPlayerCount(3);
 			
-			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
-			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
-			playerSettingsDialog.setVisible( true );
+			System.out.println("Loading PlayerSettingsDialog...");
+			
+			playerSettingsDialog = new PlayerSettingsDialog(view, true, model.getPlayerCount());
+			playerSettingsDialog.addActionListeners(new PlayerSettingsController(model, playerSettingsDialog));
+			playerSettingsDialog.setVisible(true);
 		}
 		
-		else if( actionEvent.equals( "fourPlayersButton" ) )
-		{
-			model.setPlayerCount( 4 );
+		else if (actionEvent.equals("fourPlayersBtn")) {
+		
+			model.setPlayerCount(4);
 			
-			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
-			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
-			playerSettingsDialog.setVisible( true );
+			System.out.println("Loading PlayerSettingsDialog...");
+			
+			playerSettingsDialog = new PlayerSettingsDialog(view, true, model.getPlayerCount());
+			playerSettingsDialog.addActionListeners(new PlayerSettingsController(model, playerSettingsDialog));
+			playerSettingsDialog.setVisible(true);
 		}
 		
-		else if( actionEvent.equals( "fivePlayersButton" ) )
+		else if (actionEvent.equals("fivePlayersBtn"))
 		{
-			model.setPlayerCount( 5 );
+			model.setPlayerCount(5);
 			
-			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
-			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
-			playerSettingsDialog.setVisible( true );
+			System.out.println("Loading PlayerSettingsDialog...");
+			
+			playerSettingsDialog = new PlayerSettingsDialog(view, true, model.getPlayerCount());
+			playerSettingsDialog.addActionListeners(new PlayerSettingsController(model, playerSettingsDialog));
+			playerSettingsDialog.setVisible(true);
 		}
 		
-		else if( actionEvent.equals( "sixPlayersButton" ) )
+		else if (actionEvent.equals("sixPlayersBtn"))
 		{
-			model.setPlayerCount( 6 );
+			model.setPlayerCount(6);
 			
-			playerSettingsDialog = new PlayerSettingsDialog( view, true, model.getPlayerCount() );
-			playerSettingsDialog.playerSettingsActionListeners( new PlayerSettingsController( model, playerSettingsDialog ) );
-			playerSettingsDialog.setVisible( true );
+			System.out.println("Loading PlayerSettingsDialog...");
+			
+			playerSettingsDialog = new PlayerSettingsDialog(view, true, model.getPlayerCount());
+			playerSettingsDialog.addActionListeners(new PlayerSettingsController(model, playerSettingsDialog));
+			playerSettingsDialog.setVisible(true);
 		}
 		
-		else if( actionEvent.equals( "backButton" ) )
+		else if (actionEvent.equals("backBtn"))
 		{
 			view.dispose();
 		}
 		
 		else
 		{
-			System.out.println( "Error" );
+			System.out.println("Error: " + actionEvent + " actionEvent not found!");
 		}
 	}
 }
+
+/**
+ * This class maps the user's actions in the PlayerSettingsDialog to the data and methods in 
+ * the model.
+ * @author Ted Mader
+ * @version Alpha
+ * @date 5/02/14
+ **/
+class PlayerSettingsController implements ActionListener {
+	private boolean isLoaded;
 	
-class PlayerSettingsController implements ActionListener
-{
+	private ArrayList<String> playerNames;
+	private ArrayList<String> playerTypes;
+	
 	private RiskModel model;
 	private PlayerSettingsDialog view;
 
-	private RiskBoard riskBoard;
+	private BoardView boardView;
 	
-	private String player1Name;
-	private String player2Name;
-	private String player3Name;
-	private String player4Name;
-	private String player5Name;
-	private String player6Name;
-	
-	private String player1Team;
-	private String player2Team;
-	private String player3Team;
-	private String player4Team;
-	private String player5Team;
-	private String player6Team;
-	
-	public PlayerSettingsController( RiskModel model, PlayerSettingsDialog view )
-	{
+	public PlayerSettingsController(RiskModel model, PlayerSettingsDialog view) {
+		System.out.println("Loaded PlayerSettingsController!");
 		this.model = model;
 		this.view = view;
 	}
 	
-	public void actionPerformed( ActionEvent e )
-	{
-		String actionEvent = e.getActionCommand();
+	public void actionPerformed(ActionEvent evt) {
+		isLoaded = false;
+		String actionEvent = evt.getActionCommand();
+		playerNames = new ArrayList<String>();
+		playerTypes = new ArrayList<String>();
 		
-		if( actionEvent.equals( "startButton" ) )
-		{
-			player1Name = view.getPlayer1TextField();
-			player2Name = view.getPlayer2TextField();
-			player3Name = view.getPlayer3TextField();
+		if (actionEvent.equals("startBtn")) {
 		
-			player1Team = view.getPlayer1ComboBox();
-			player2Team = view.getPlayer2ComboBox();
-			player3Team = view.getPlayer3ComboBox();
+			System.out.println("Setting up player names and teams...");
+			
+			playerNames.add(view.getPlayerTextField(1));
+			playerNames.add(view.getPlayerTextField(2));
+			playerNames.add(view.getPlayerTextField(3));
+			playerTypes.add(view.getPlayerComboBox(1));
+			playerTypes.add(view.getPlayerComboBox(2));
+			playerTypes.add(view.getPlayerComboBox(3));
 			
 			//Gets player names based on playerCount
-			if( model.getPlayerCount() > 3 )
-			{
-				player4Name = view.getPlayer4TextField();
-				player4Team = view.getPlayer4ComboBox();
+			if (model.getPlayerCount() > 3) {
+				playerNames.add(view.getPlayerTextField(4));
+				playerTypes.add(view.getPlayerComboBox(4));
 			}
-			
-			if( model.getPlayerCount() > 4 )
-			{
-				player5Name = view.getPlayer5TextField();
-				player5Team = view.getPlayer5ComboBox();
+			if (model.getPlayerCount() > 4) {
+				playerNames.add(view.getPlayerTextField(5));
+				playerTypes.add(view.getPlayerComboBox(5));
 			}
-			
-			if( model.getPlayerCount() > 5 )
-			{
-				player6Name = view.getPlayer6TextField();
-				player6Team = view.getPlayer6ComboBox();
+			if (model.getPlayerCount() > 5) {
+				playerNames.add(view.getPlayerTextField(6));
+				playerTypes.add(view.getPlayerComboBox(6));
 			}
-			
-			//Sets player names
-			model.setPlayerNames( player1Name, player2Name, player3Name, player4Name, player5Name, player6Name );
-			
-			//Sets player teams
-			model.setPlayerTeams( player1Team, player2Team, player3Team, player4Team, player5Team, player6Team );
 	
-			//Initializes values for a new game
-			model.initializeGame();
+			System.out.println("Initializing game...");
 			
-			//Opens the Risk game board
-			riskBoard = new RiskBoard( view, true );
-			riskBoard.riskBoardActionListeners( new RiskBoardController( model, riskBoard ) );
-			riskBoard.setVisible( true );
-		}
-		
-		else if( actionEvent.equals( "backButton" ) )
-		{
+			//Initializes values for a new game
+			try {
+				isLoaded = model.initializeGame(playerNames, playerTypes);
+			} catch (FileNotFoundException error) {
+				System.out.println(error.getMessage());
+			}
+			
+			//Opens the Risk game board if properly loaded
+			if (isLoaded == true) {
+				System.out.println("Game setup complete!\nLoading BoardView...");
+				
+				boardView = new BoardView(view, true, model);
+				boardView.addActionListeners(new BoardViewController(model, boardView), new RiskListController(model, boardView));
+				
+				// boardView.addListSelectionListeners(new BoardViewListSelectionController(model, boardView));
+				boardView.setVisible(true);
+			}
+		} else if (actionEvent.equals("backBtn")) {
 			view.dispose();
-		}
 		
-		else
-		{
-			System.out.println( "actionEvent not found: " + actionEvent );
+		} else {
+			System.out.println("Error: " + actionEvent + " actionEvent not found!");
 		}
 	}
 }
 
-class RiskBoardController implements ActionListener
-{
+/**
+ * This class maps the user's actions in the BoardView to the data and methods in the model.
+ * @author Ted Mader
+ * @version Alpha
+ * @date 5/02/14
+ **/
+class BoardViewController implements ActionListener {
+
 	private RiskModel model;
-	private RiskBoard view;
-	
+	private BoardView view;
 	private MenuDialog menuDialog;
 	
-	private int troopCount;
+	public BoardViewController(RiskModel model, BoardView view) {		
+		this.model = model;
+		this.view = view;
+		model.startGame();
+	}
 	
-	private String isInt;
+	public void actionPerformed(ActionEvent evt) {
 	
-	private String troopCountString;
+		String actionEvent = evt.getActionCommand();
+		
+		if (actionEvent.equals("menuBtn")) {
+			//System.out.println("User pressed menuButton.");
+			menuDialog = new MenuDialog(view, true);
+			menuDialog.addActionListeners(new MenuController(model, menuDialog));
+			menuDialog.setVisible(true);
+			
+		} else if (actionEvent.equals("turnInBtn")) {
+			//System.out.println("User pressed turnInButton.");
+			model.turnInCards(view.getCardsToRemove());
+			
+		} else if (actionEvent.equals("reinforceBtn")) {
+			//System.out.println("User pressed reinforceButton.");view.getSelectedComboBox();
+			model.reinforce(view.getCountryA().replaceAll("[0-9]", "").replaceAll("\\-", ""));
+			
+		} else if (actionEvent.equals("attackBtn")) {
+			//System.out.println("User pressed attackButton.");
+			model.attack(view.getCountryA().replaceAll("[0-9]", "").replaceAll("\\-", ""), view.getCountryB().replaceAll("[0-9]", "").replaceAll("\\-", ""));
+			
+		} else if (actionEvent.equals("fortifyBtn")) {
+			//System.out.println("User pressed fortifyButton.");
+			model.fortify(view.getCountryA().replaceAll("[0-9]", "").replaceAll("\\-", ""), view.getCountryB().replaceAll("[0-9]", "").replaceAll("\\-", ""));
+			
+		} else if (actionEvent.equals("endTurnBtn")) {
+			model.nextPlayer();
+		
+		} else {
+			System.out.println("actionEvent not found: " + actionEvent);
+		}
+	}
+}
+
+/**
+ * This class maps the user's actions in RiskList objects to the data and methods in the 
+ * model.
+ * @author Ted Mader
+ * @version Alpha
+ * @date 5/02/14
+ **/
+class RiskListController implements ListSelectionListener {
 	
-	private String selectedTerritory;
-	private String targetTerritory;
+	private RiskModel model;
+	private BoardView view;
 	
-	private String reinforceString;
-	private String attackString;
-	private String fortifyString;
-	private String turnInString;
-	
-	public RiskBoardController( RiskModel model, RiskBoard view )
-	{
+	public RiskListController(RiskModel model, BoardView view) {
 		this.model = model;
 		this.view = view;
 	}
+
+	public void valueChanged(ListSelectionEvent evt) {
 	
-	public void actionPerformed( ActionEvent e )
-	{
-		String actionEvent = e.getActionCommand();
-		
-		if( actionEvent.equals( "menuButton" ) )
-		{
-			menuDialog = new MenuDialog( view, true );
-			menuDialog.menuDialogActionListeners( new MenuDialogController( model, menuDialog ) );
-			menuDialog.setVisible( true );			
-		}
-		
-		else if( actionEvent.equals( "reinforceButton" ) )
-		{
-			selectedTerritory = view.getSelectedComboBox();
+		if (evt.getValueIsAdjusting() == false) {
 			
-			isInt = "no";
+			if (view.getCountryAIndex() == -1) {
 			
-			//To Do: Allow escape from try/catch block when clicking "Cancel"
-			
-			try
-			{
-				troopCountString = JOptionPane.showInputDialog( "How many troops do you wish to send to reinforce " + selectedTerritory + "?" );
-				troopCount = Integer.parseInt( troopCountString );
-				
-				isInt = "yes";
+			} else {
+				model.setCountryASelection(view.getCountryA().replaceAll("[0-9]", "").replaceAll("\\-", ""));
 			}
-			
-			catch( Exception error )
-			{
-				JOptionPane.showMessageDialog( null, "Please type a number." );
-			}
-			
-			if( isInt.equals( "yes" ) )
-			{
-				model.buildReinforceString( troopCount, selectedTerritory );
-				
-				reinforceString = model.getReinforceString();
-				
-				JOptionPane.showMessageDialog( null, reinforceString );
-			}
-		}
-		
-		else if( actionEvent.equals( "attackButton" ) )
-		{
-			selectedTerritory = view.getSelectedComboBox();
-			targetTerritory = view.getTargetComboBox();
-			
-			isInt = "no";
-			
-			//To Do: Allow escape from try/catch block when clicking "Cancel"
-			
-			try
-			{
-				troopCountString = JOptionPane.showInputDialog( "How many troops from " + selectedTerritory + " do you wish to send to attack " + targetTerritory + "?" );
-				troopCount = Integer.parseInt( troopCountString );
-		
-				isInt = "yes";
-			}
-			catch( Exception error )
-			{
-				JOptionPane.showMessageDialog( null, "Please type a number." );
-			}
-			
-			if( isInt.equals( "yes" ) )
-			{
-				model.buildAttackString( troopCount, selectedTerritory, targetTerritory );
-				
-				attackString = model.getAttackString();
-				
-				JOptionPane.showMessageDialog( null, attackString );
-			}
-		}
-		
-		else if( actionEvent.equals( "fortifyButton" ) )
-		{
-			selectedTerritory = view.getSelectedComboBox();
-			targetTerritory = view.getTargetComboBox();
-			
-			isInt = "no";
-			
-			//To Do: Allow escape from try/catch block when clicking "Cancel"
-			
-			try
-			{
-				troopCountString = JOptionPane.showInputDialog( "How many troops from " + selectedTerritory + " do you wish to send to fortify " + targetTerritory + "?" );
-				troopCount = Integer.parseInt( troopCountString );
-			
-				isInt = "yes";
-			}
-			catch( Exception error )
-			{
-				JOptionPane.showMessageDialog( null, "Please type a number." );
-			}
-			
-			if( isInt.equals( "yes" ) )
-			{
-				model.buildFortifyString( troopCount, selectedTerritory, targetTerritory );
-				
-				fortifyString = model.getFortifyString();
-				
-				JOptionPane.showMessageDialog( null, fortifyString );
-			}
-		}
-		
-		else if( actionEvent.equals( "turnInButton" ) )
-		{
-			turnInString = "The player turned in his Risk cards.";
-			
-			JOptionPane.showMessageDialog( null, turnInString );
-		}
-		
-		else
-		{
-			System.out.println( "actionEvent not found: " + actionEvent );
 		}
 	}
 }
 
-class MenuDialogController implements ActionListener
-{
+/**
+ * This class maps the user's actions in the MenuDialog to the data and methods in the model.
+ * @author Ted Mader
+ * @version Alpha
+ * @date 5/02/14
+ **/
+class MenuController implements ActionListener {
+
 	private RiskModel model;
 	private MenuDialog view;
 	
 	private JFileChooser fileChooser;
-	private File file;
+	private ObjectOutputStream objectWriter;
+	private ObjectInputStream objectReader;
+	private BufferedReader reader;
 	
-	public MenuDialogController( RiskModel model, MenuDialog view )
-	{
+	public MenuController(RiskModel model, MenuDialog view) {
+	
 		this.model = model;
 		this.view = view;
 	}
 	
-	public void actionPerformed( ActionEvent e )
-	{
-		String actionEvent = e.getActionCommand();
+	public void actionPerformed(ActionEvent evt) {
 	
-		if( actionEvent.equals( "returnButton" ) )
-		{
+		String actionEvent = evt.getActionCommand();
+	
+		if (actionEvent.equals("returnBtn")) {
 			view.dispose();
-		}
-		
-		else if( actionEvent.equals( "saveButton" ) )
-		{
-			fileChooser = new JFileChooser();
 			
-			if ( fileChooser.showSaveDialog( view ) == JFileChooser.APPROVE_OPTION )
-			{
-				file = fileChooser.getSelectedFile();
+		} else if (actionEvent.equals("saveBtn")) {
+		
+			fileChooser = new JFileChooser();
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("Java-Risk Save Files", "jrs");
+			fileChooser.setFileFilter(filter);
+			
+			if (fileChooser.showSaveDialog(view) == JFileChooser.APPROVE_OPTION) {
+			
+				try {
+					objectWriter = new ObjectOutputStream(new FileOutputStream(fileChooser.getSelectedFile()));
+					objectWriter.writeObject(model);
+					objectWriter.close();
+					
+				} catch (IOException e) {
+					System.out.println(e.getMessage()); 
+				}
 			}
-		}
-		
-		else if( actionEvent.equals( "quitButton" ) )
-		{
+		} else if (actionEvent.equals("quitBtn")) {
 			model.quitGame();
-		}
-		
-		else
-		{
-			System.out.println( "actionEvent not found: " + actionEvent );
+			
+		} else {
+			System.out.println("actionEvent not found: " + actionEvent);
 		}
 	}
-
 }
-
