@@ -9,7 +9,7 @@ This program has three main screens that will have to be displayed to the user:
 - A main menu
 - Game setup screen
 - Main play screen
-- 
+
 The Main menu will be simple. It will consist of three buttons: New Game, Load Saved Game, and Quit.
 - If the user selects “Quit”, the program closes and exits.
 - If the user selects “Load Saved Game”, a file chooser will be displayed to allow the user to select the saved game file.
